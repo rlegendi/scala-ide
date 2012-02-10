@@ -20,6 +20,7 @@ import scala.tools.eclipse.logging.HasLogger
 import sbt.inc.{ AnalysisFormats, AnalysisStore, Analysis, FileBasedStore }
 import org.eclipse.core.resources.IProject
 import sbinary.DefaultProtocol.{ immutableMapFormat, immutableSetFormat, StringFormat }
+import scala.tools.eclipse.codeanalysis.CodeAnalysisProblemsReporter
 
 // The following code is based on sbt.AggressiveCompile
 // Copyright 2010 Mark Harrah
@@ -265,7 +266,8 @@ class EclipseSbtBuildManager(val project: ScalaProject, settings0: Settings)
 	val compiler = null
 	var depFile: IFile = null
 	
-	private[sbtintegration] lazy val _buildReporter = new BuildReporter(project, settings0) {
+	private[sbtintegration] lazy val _buildReporter = new BuildReporter(project, settings0) with CodeAnalysisProblemsReporter {
+	  val eclipseProject = EclipseSbtBuildManager.this.project.underlying
 		val buildManager = EclipseSbtBuildManager.this
 	}
 	

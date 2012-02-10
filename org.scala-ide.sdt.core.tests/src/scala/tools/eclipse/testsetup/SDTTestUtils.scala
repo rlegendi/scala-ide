@@ -19,6 +19,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder
 import org.eclipse.core.resources.IMarker
 import org.eclipse.jdt.core.IPackageFragment
 import org.eclipse.jdt.core.IClasspathEntry
+import scala.tools.eclipse.codeanalysis.CodeAnalysisPreferences
 
 /** Utility functions for setting up test projects.
  *
@@ -61,11 +62,16 @@ object SDTTestUtils {
       project.create(null)
       project.open(null)
       JavaCore.create(project)
+      disableCodeAnalysis()
     }
     ScalaPlugin.plugin.getScalaProject(workspace.getRoot.getProject(name))
   }
+  
+  def disableCodeAnalysis() {
+    ScalaPlugin.plugin.getPreferenceStore.setValue(CodeAnalysisPreferences.generallyEnabledKey, false)
+  }
 
-  /** Return all positions (offsets) of the given str in the given source file.
+  /** Return all positions (offsets) of the given str in the given source file. 
    */
   def positionsOf(source: Array[Char], str: String): Seq[Int] = {
     val buf = new mutable.ListBuffer[Int]
