@@ -1,0 +1,14 @@
+package scala.tools.eclipse.scalatest.launching
+
+object ScalaTestLaunchConstants {
+  val SCALATEST_LAUNCH_TYPE_NAME = "SCALATEST_LAUNCH_TYPE"
+  val SCALATEST_LAUNCH_INCLUDE_NESTED_NAME = "SCALATEST_LAUNCH_INCLUDE_NESTED"
+  val SCALATEST_LAUNCH_TESTS_NAME = "SCALATEST_LAUNCH_TESTS_NAME"
+  
+  val TYPE_SUITE = "SUITE"
+  val TYPE_FILE = "FILE"
+  val TYPE_PACKAGE = "PACKAGE"
+    
+  val INCLUDE_NESTED_TRUE = "true"
+  val INCLUDE_NESTED_FALSE = "false"
+}
