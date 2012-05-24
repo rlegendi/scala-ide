@@ -150,11 +150,22 @@
       <artifactId>sbinary_${sbt.compiled.version}</artifactId>
       <version>${sbinary.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.scalatest</groupId>
-      <artifactId>scalatest-finders_2.9.0</artifactId>
-      <version>0.9.1-SNAPSHOT</version>
-    </dependency>
+	<dependency>
+		<groupId>org.specs2</groupId>
+		<artifactId>specs2_2.9.2</artifactId>
+		<version>1.10</version>
+	</dependency>
+	<dependency>
+		<groupId>org.scalatest</groupId>
+		<artifactId>scalatest_2.9.1</artifactId>
+		<version>2.0.M1</version>
+	</dependency>
+	<!-- Should this included in the client side? It has quite a high fingerprint...-->
+	<dependency>
+		<groupId>org.scalatest</groupId>
+		<artifactId>scalatest-finders_2.9.1</artifactId>
+		<version>1.0.1</version>
+	</dependency>
     <!-- Should be the one with which we built sbt, for now, let's use 2.9.0 -->
   </dependencies>
   <build>
@@ -359,12 +370,33 @@
                   <version>${sbinary.version}</version>
                   <outputDirectory>${project.build.directory}</outputDirectory>
                 </artifactItem>
+		<!--
                 <artifactItem>
                   <groupId>org.scalatest</groupId>
                   <artifactId>scalatest-finders_2.9.0</artifactId>
                   <version>0.9.1-SNAPSHOT</version>
                   <outputDirectory>${project.build.directory}</outputDirectory>
-                </artifactItem>              
+		</artifactItem>              
+		-->
+			<artifactItem>
+				<groupId>org.specs2</groupId>
+				<artifactId>specs2_2.9.2</artifactId>
+				<version>1.10</version>
+                  		<outputDirectory>${project.build.directory}</outputDirectory>
+			</artifactItem>
+			<artifactItem>
+				<groupId>org.scalatest</groupId>
+				<artifactId>scalatest_2.9.1</artifactId>
+				<version>2.0.M1</version>
+		                <outputDirectory>${project.build.directory}</outputDirectory>
+			</artifactItem>
+			<!-- Should this included in the client side? It has quite a high fingerprint...-->
+			<artifactItem>
+				<groupId>org.scalatest</groupId>
+				<artifactId>scalatest-finders_2.9.1</artifactId>
+				<version>1.0.1</version>
+                		<outputDirectory>${project.build.directory}</outputDirectory>
+			</artifactItem>
               </artifactItems>
             </configuration>
           </execution>
@@ -452,7 +484,7 @@
             <!-- put a '-' after the sbt.version since it already has a '-scalaide-01' qualifier. Remove it the qualifier is gone. -->
             <Bundle-Version>${sbt.version}-${version.suffix}-${maven.build.timestamp}</Bundle-Version>
             <Embed-Dependency>*;scope=compile|runtime;inline=false</Embed-Dependency>
-            <_exportcontents>sbt.*;version=${sbt.version},xsbt.*;version=${sbt.version},xsbti.*;version=${sbt.version},sbinary.*;version=${sbinary.version},jline.*;version=0.9.94,org.apache.ivy.*;version=2.2.0,org.scalatest.finders.*;version=0.9.1-SNAPSHOT</_exportcontents>
+            <_exportcontents>sbt.*;version=${sbt.version},xsbt.*;version=${sbt.version},xsbti.*;version=${sbt.version},sbinary.*;version=${sbinary.version},jline.*;version=0.9.94,org.apache.ivy.*;version=2.2.0,org.scalatest.finders.*;version=1.0.1,org.specs2.*;version=1.10,org.scalatest.*;version=2.0.M1</_exportcontents>
             <Embed-Directory>lib</Embed-Directory>
             <Embed-StripVersion>true</Embed-StripVersion>
             <Include-Resource>lib=${project.build.directory}/lib</Include-Resource>
