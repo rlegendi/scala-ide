@@ -2,3 +2,7 @@ bin
 target
 compiler-plugins
 .scala_dependencies
+.cache
+
+# The maven-dependency-plugin's copy execution is putting here a few binaries
+lib
