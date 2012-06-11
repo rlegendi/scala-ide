@@ -337,6 +337,11 @@ class ScalaTestListener extends Observable with Runnable {
           Thread.sleep(10)
       }
     }
+    catch {
+      case e => {
+        ScalaTestPlugin.log(e)
+      }
+    }
     finally {
       in.close()
       connection.close()

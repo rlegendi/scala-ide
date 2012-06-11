@@ -36,13 +36,18 @@
 
 package scala.tools.eclipse.scalatest.launching
 
-import org.eclipse.jdt.launching.{AbstractJavaLaunchConfigurationDelegate, JavaRuntime,
-	                                IRuntimeClasspathEntry, VMRunnerConfiguration, ExecutionArguments}
+import org.eclipse.jdt.launching.{
+  AbstractJavaLaunchConfigurationDelegate,
+  JavaRuntime,
+  IRuntimeClasspathEntry,
+  VMRunnerConfiguration,
+  ExecutionArguments
+}
 import scala.tools.eclipse.ScalaPlugin
 import java.io.File
 import com.ibm.icu.text.MessageFormat
-import org.eclipse.core.runtime.{Path, CoreException, IProgressMonitor, NullProgressMonitor}
-import org.eclipse.debug.core.{ILaunch, ILaunchConfiguration}
+import org.eclipse.core.runtime.{ Path, CoreException, IProgressMonitor, NullProgressMonitor }
+import org.eclipse.debug.core.{ ILaunch, ILaunchConfiguration }
 import org.eclipse.jdt.internal.launching.LaunchingMessages
 import scala.collection.JavaConversions._
 import scala.collection.mutable
@@ -58,66 +63,124 @@ import scala.tools.eclipse.scalatest.ui.Node
 import scala.tools.eclipse.scalatest.ui.TestModel
 import scala.tools.eclipse.scalatest.ui.TestStatus
 import scala.annotation.tailrec
+import org.eclipse.core.runtime.IPath
+import org.eclipse.core.resources.IWorkspaceRoot
+import org.eclipse.core.resources.IFolder
+import org.eclipse.ui.ISelectionService
+import org.eclipse.ui.PlatformUI
+import org.eclipse.swt.widgets.Display
+import org.eclipse.jface.viewers.TreeSelection
+import org.eclipse.jface.viewers.TreeSelection
+import org.eclipse.jdt.core.IClasspathEntry
+import org.eclipse.jdt.internal.core.PackageFragmentRoot
+import scala.collection.mutable.ListBuffer
+
+class OutputDirLocator(configuration: ILaunchConfiguration) {
+  val outputDir = initOutputDir()
+
+  private def initOutputDir() : String = {
+    val default = JavaRuntime.getProjectOutputDirectory(configuration)
+    
+    if (default != null) {
+      return default
+    }
+    
+    val dummy = new Array[String](1)
+    Display.getDefault.syncExec(new Runnable() {
+      def run() {
+        val window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        val selection = window.getSelectionService().getSelection("org.eclipse.jdt.ui.PackageExplorer");
+
+        // Multiple selections from different test packages?
+        // TODO Structured selection?
+        if (selection.isInstanceOf[TreeSelection]) {
+          val treeSelection = selection.asInstanceOf[TreeSelection]
+          treeSelection.getPaths.foreach {
+            // In case of non-hierarchic package view this might be tricky to to get the source root...
+            treePath =>
+              val sourceFolder = treePath.getParentPath
+              val project = JavaRuntime.getJavaProject(configuration)
+              // TODO Assert: there should be only one source folder with a given name
+              val rcp = project.getRawClasspath
+
+              val res = sourceFolder.getLastSegment.asInstanceOf[PackageFragmentRoot].getPath
+              val cpEntry4SourceFolder = project.getRawClasspath.find { cpEntry =>
+                if (cpEntry.getEntryKind == IClasspathEntry.CPE_SOURCE) {
+                  cpEntry.getPath != null &&
+                    cpEntry.getPath == res
+                } else {
+                  false
+                }
+              }
+
+              dummy(0) = cpEntry4SourceFolder.get.getOutputLocation.toString
+          }
+        }
+      }
+    })
+    
+    return dummy(0)
+  }
+}
 
 class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
-  
+
   private def getDisplay() = {
-    
+
   }
-  
+
   def launchScalaTest(configuration: ILaunchConfiguration, mode: String, launch: ILaunch, monitor0: IProgressMonitor, stArgs: String) {
     val monitor = if (monitor0 == null) new NullProgressMonitor() else monitor0
-		
+
     monitor.beginTask(configuration.getName() + "...", 3)
 
     if (monitor.isCanceled())
       return
-			
+
     try {
-      monitor.subTask(LaunchingMessages.JavaLocalApplicationLaunchConfigurationDelegate_Verifying_launch_attributes____1) 
-							
+      monitor.subTask(LaunchingMessages.JavaLocalApplicationLaunchConfigurationDelegate_Verifying_launch_attributes____1)
+
       val mainTypeName = "org.scalatest.tools.Runner"
       val runner = getVMRunner(configuration, mode)
-	
+
       val workingDir = verifyWorkingDirectory(configuration)
       val workingDirName = if (workingDir != null) workingDir.getAbsolutePath() else null
-			
+
       // Environment variables
       val envp = getEnvironment(configuration)
-			
+
       // VM-specific attributes
       val vmAttributesMap = getVMSpecificAttributesMap(configuration)
 
       val modifiedAttrMap: mutable.Map[String, Array[String]] =
-        if (vmAttributesMap == null) mutable.Map() else vmAttributesMap.asInstanceOf[java.util.Map[String,Array[String]]]
+        if (vmAttributesMap == null) mutable.Map() else vmAttributesMap.asInstanceOf[java.util.Map[String, Array[String]]]
       val classpath0 = getClasspath(configuration)
       val missingScalaLibraries = toInclude(modifiedAttrMap,
-					classpath0.toList, configuration)
+        classpath0.toList, configuration)
       // Classpath
       // Add scala libraries that were missed in VM attributes
-      val classpath = (classpath0.toList):::missingScalaLibraries
-			
+      val classpath = (classpath0.toList) ::: missingScalaLibraries
+
       // Program & VM arguments	
       val vmArgs = getVMArguments(configuration)
-			
-      val loaderUrls = classpath.map{ cp => new File(cp.toString).toURI.toURL }
 
-      val loader:ClassLoader = new URLClassLoader(loaderUrls.toArray, getClass.getClassLoader)
-      
-      val pgmArgs = 
-      try {
-        loader.loadClass("org.scalatest.tools.SocketReporter")
-        ScalaTestPlugin.asyncShowTestRunnerViewPart(launch, configuration.getName, configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""))
-        val port = ScalaTestPlugin.listener.getPort
-        getProgramArguments(configuration) + " " + stArgs + " -oW -k localhost " + port
-      }
-      catch {
-        case e: Throwable => 
-          getProgramArguments(configuration) + " " + stArgs + " -oW -g"
-      }
-            
+      val loaderUrls = classpath.map { cp => new File(cp.toString).toURI.toURL }
+
+      val loader: ClassLoader = new URLClassLoader(loaderUrls.toArray, getClass.getClassLoader)
+
+      val pgmArgs =
+        try {
+          loader.loadClass("org.scalatest.tools.SocketReporter")
+          ScalaTestPlugin.asyncShowTestRunnerViewPart(launch, configuration.getName, configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""))
+          val port = ScalaTestPlugin.listener.getPort
+          getProgramArguments(configuration) + " " + stArgs + " -oW -k localhost " + port
+        } catch {
+          case e: Throwable =>
+            getProgramArguments(configuration) + " " + stArgs + " -oW -g"
+        }
+
       val execArgs = new ExecutionArguments(vmArgs, pgmArgs)
-			
+
       // Create VM config
       val runConfig = new VMRunnerConfiguration(mainTypeName, classpath.toArray)
       runConfig.setProgramArguments(execArgs.getProgramArgumentsArray())
@@ -128,45 +191,44 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
 
       // Bootpath
       runConfig.setBootClassPath(getBootpath(configuration))
-			
+
       // check for cancellation
       if (monitor.isCanceled())
         return
-			
+
       // stop in main
       prepareStopInMain(configuration)
-			
+
       // done the verification phase
       monitor.worked(1)
-			
-      monitor.subTask(LaunchingMessages.JavaLocalApplicationLaunchConfigurationDelegate_Creating_source_locator____2) 
+
+      monitor.subTask(LaunchingMessages.JavaLocalApplicationLaunchConfigurationDelegate_Creating_source_locator____2)
       // set the default source locator if required
       setDefaultSourceLocator(launch, configuration)
       monitor.worked(1)
-			
+
       // Launch the configuration - 1 unit of work
       runner.run(runConfig, launch, monitor)
-			
+
       // check for cancellation
       if (monitor.isCanceled())
         return
-      }
-      finally {
-        monitor.done()
-      }
+    } finally {
+      monitor.done()
+    }
   }
-  
+
   def launch(configuration: ILaunchConfiguration, mode: String, launch: ILaunch, monitor0: IProgressMonitor) {
     // Test Class
     val stArgs = getScalaTestArgs(configuration)
     launchScalaTest(configuration, mode, launch, monitor0, stArgs)
   }
-	
+
   private def toInclude(vmMap: mutable.Map[String, Array[String]], classpath: List[String],
-			          configuration: ILaunchConfiguration): List[String] =
+    configuration: ILaunchConfiguration): List[String] =
     missingScalaLibraries((vmMap.values.flatten.toList) ::: classpath, configuration)
 
-  private def missingScalaLibraries(included: List[String], configuration: ILaunchConfiguration): List[String] =  {
+  private def missingScalaLibraries(included: List[String], configuration: ILaunchConfiguration): List[String] = {
     val entries = JavaRuntime.computeUnresolvedRuntimeClasspath(configuration).toList
     val libid = Path.fromPortableString(ScalaPlugin.plugin.scalaLibId)
     val found = entries.find(e => e.getClasspathEntry != null && e.getClasspathEntry.getPath == libid)
@@ -178,19 +240,23 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
         List()
     }
   }
-	
+
   private def resolveClasspath(a: IRuntimeClasspathEntry, configuration: ILaunchConfiguration): List[String] = {
     val bootEntry = JavaRuntime.resolveRuntimeClasspath(Array(a), configuration)
     bootEntry.toList.map(_.getLocation())
   }
   
+  private def escapeScalaTestClasspathComponents(comp: String) : String = {
+    comp.replaceAll(" ", "\\ ").replaceAll("\"", "\\\"")
+  } 
+  
   private def getScalaTestArgs(configuration: ILaunchConfiguration): String = {
     val launchType = configuration.getAttribute(SCALATEST_LAUNCH_TYPE_NAME, TYPE_SUITE)
     launchType match {
-      case TYPE_SUITE => 
+      case TYPE_SUITE =>
         val suiteClass = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "")
         val testSet: java.util.Set[String] = configuration.getAttribute(SCALATEST_LAUNCH_TESTS_NAME, new java.util.HashSet[String]()).asInstanceOf[java.util.Set[String]]
-        if (testSet.size == 0) 
+        if (testSet.size == 0)
           "-s " + suiteClass
         else
           "-s " + suiteClass + " " + testSet.map("-t \"" + _ + "\"").mkString(" ")
@@ -199,59 +265,107 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
         if (filePortablePath.length > 0) {
           val scSrcFileOpt = ScalaSourceFile.createFromPath(filePortablePath)
           scSrcFileOpt match {
-            case Some(scSrcFile) => 
+            case Some(scSrcFile) =>
               scSrcFile.getTypes
                 .filter(ScalaTestLaunchShortcut.isScalaTestSuite(_))
                 .map(iType => "-s " + iType.getFullyQualifiedName)
                 .mkString(" ")
-            case None => 
+            case None =>
               MessageDialog.openError(null, "Error", "File '" + filePortablePath + "' not found.")
               ""
           }
-        }
-        else
+        } else
           ""
       case TYPE_PACKAGE =>
         val packageName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "")
         val workspace = ResourcesPlugin.getWorkspace()
-        val outputDir = new File(workspace.getRoot.getLocation.toFile, JavaRuntime.getProjectOutputDirectory(configuration)).getAbsolutePath
+
+        //val outputDir = new File(workspace.getRoot.getLocation.toFile, JavaRuntime.getProjectOutputDirectory(configuration)).getAbsolutePath
+        
+        //        val sourceFolder = selection.
+        //          
+        //        val cpEntry4Source =...
+        //        
+        //        val outputDir = cpEntry4Source. xxx
+
+        // This might be null for some reason!
+        //        val JoutputDir = JavaRuntime.getProjectOutputDirectory(configuration)
+
+        //val outputDir = new OutputDirLocator(configuration).outputDir
+
+        val project = JavaRuntime.getJavaProject(configuration)
+        val outputDirList = new ListBuffer[String]
+
+        val defaultOutputDir = JavaRuntime.getProjectOutputDirectory(configuration)
+        if (defaultOutputDir != null) {
+          //outputDirList += defaultOutputDir
+          val path = ResourcesPlugin.getWorkspace.getRoot.findMember(defaultOutputDir).getLocation.toFile.getAbsolutePath
+          val escaped = escapeScalaTestClasspathComponents(path)
+          //outputDirList += new File(workspace.getRoot.getLocation.toFile, escaped).getAbsolutePath
+          outputDirList += path
+        }
+
+        project.getRawClasspath.foreach {
+          cpentry =>
+            val oloc = cpentry.getOutputLocation
+            if (oloc != null) {
+              outputDirList += oloc.toFile.getAbsolutePath.toString
+            } else {
+              getClasspath(configuration)
+            }
+        }
+        
+        val cp = getClasspath(configuration)
+        //val outputDir = outputDirList.toSet.foldLeft("")((acc, act) => acc + " " + escapeScalaTestClasspathComponents(act) ).trim
+        val outputDir = cp.toSet.foldLeft("")((acc, act) => acc + " " + escapeScalaTestClasspathComponents(act) ).trim
+        
+//        val project = JavaRuntime.getJavaProject(configuration)
+//        val apfr = project.getAllPackageFragmentRoots
+//        val pfr = project.getPackageFragmentRoots
+//        val rcp = project.getRawClasspath
+//        val path = project.getOutputLocation()
+//        val root = ResourcesPlugin.getWorkspace().getRoot()
+//        val folder = root.getFolder(path)
+//        //return folder.getLocation()
+//        val outputDir = folder.getLocation.toFile.getAbsolutePath
+
+        //val outputDir = new File(workspace.getRoot.getLocation.toFile, JoutputDir).getAbsolutePath
         if (packageName.length > 0) {
           val includeNested = configuration.getAttribute(SCALATEST_LAUNCH_INCLUDE_NESTED_NAME, INCLUDE_NESTED_FALSE)
-          if (includeNested == INCLUDE_NESTED_TRUE) 
+          if (includeNested == INCLUDE_NESTED_TRUE)
             "-p \"" + outputDir + "\" -w " + packageName
           else
             "-p \"" + outputDir + "\" -m " + packageName
-        }
-        else
+        } else
           ""
       case _ =>
         ""
     }
   }
-  
+
   def getScalaTestArgsForSuite(suiteClassName: String, suiteId: String) = {
     if (suiteClassName == suiteId)
       "-s " + suiteClassName
     else
       "-s " + suiteClassName + " -i \"" + suiteId + "\""
   }
-  
+
   def getScalaTestArgsForTest(suiteClassName: String, suiteId: String, testName: String) = {
     if (suiteClassName == suiteId)
       "-s " + suiteClassName + " -t \"" + testName + "\""
     else
       "-s " + suiteClassName + " -i \"" + suiteId + "\" -t \"" + testName + "\""
   }
-  
+
   def getScalaTestArgsForFailedTests(node: Node) = {
     @tailrec
     def getFailedTestsAcc(acc: List[TestModel], children: List[Node]): List[TestModel] = {
       children match {
-        case Nil => 
+        case Nil =>
           acc
-        case head :: rest => 
+        case head :: rest =>
           val newAcc = head match {
-            case test: TestModel if test.status == TestStatus.FAILED => 
+            case test: TestModel if test.status == TestStatus.FAILED =>
               test :: acc
             case _ =>
               acc
@@ -260,11 +374,11 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
       }
     }
     val failedTests = getFailedTestsAcc(Nil, List(node))
-    failedTests.map { test => 
+    failedTests.map { test =>
       test.rerunner match {
-        case Some(rerunner) => 
+        case Some(rerunner) =>
           getScalaTestArgsForTest(rerunner, test.suiteId, test.testName)
-        case None => 
+        case None =>
           ""
       }
     }.filter(_ != "").mkString(" ")

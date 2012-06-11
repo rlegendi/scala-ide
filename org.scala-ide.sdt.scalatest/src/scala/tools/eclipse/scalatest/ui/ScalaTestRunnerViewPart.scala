@@ -497,7 +497,7 @@ class ScalaTestRunnerViewPart extends ViewPart with Observer {
             fTestViewer.registerAutoScrollTarget(scope)
             fTestViewer.registerNodeAdded(scope)
           case None => 
-            // Should not happend
+            // Should not happen
             throw new IllegalStateException("Unable to find suite model for ScopeOpened, suiteId: " + scopeOpened.nameInfo.suiteId)
         }
       case scopeClosed: ScopeClosed => 
