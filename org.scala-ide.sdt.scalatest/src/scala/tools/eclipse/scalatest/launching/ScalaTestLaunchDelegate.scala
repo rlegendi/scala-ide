@@ -36,92 +36,50 @@
 
 package scala.tools.eclipse.scalatest.launching
 
-import org.eclipse.jdt.launching.{
-  AbstractJavaLaunchConfigurationDelegate,
-  JavaRuntime,
-  IRuntimeClasspathEntry,
-  VMRunnerConfiguration,
-  ExecutionArguments
-}
-import scala.tools.eclipse.ScalaPlugin
 import java.io.File
-import com.ibm.icu.text.MessageFormat
-import org.eclipse.core.runtime.{ Path, CoreException, IProgressMonitor, NullProgressMonitor }
-import org.eclipse.debug.core.{ ILaunch, ILaunchConfiguration }
-import org.eclipse.jdt.internal.launching.LaunchingMessages
-import scala.collection.JavaConversions._
-import scala.collection.mutable
-import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants
-import ScalaTestLaunchConstants._
-import scala.tools.eclipse.javaelements.ScalaSourceFile
-import org.eclipse.jface.dialogs.MessageDialog
-import org.eclipse.core.resources.ResourcesPlugin
-import java.net.URL
 import java.net.URLClassLoader
-import scala.tools.eclipse.scalatest.ui.ScalaTestPlugin
+
+import scala.Array.canBuildFrom
+import scala.annotation.tailrec
+import scala.collection.JavaConversions.asScalaSet
+import scala.collection.JavaConversions.mapAsScalaMap
+import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
+import scala.tools.eclipse.ScalaPlugin
+import scala.tools.eclipse.javaelements.ScalaSourceFile
 import scala.tools.eclipse.scalatest.ui.Node
+import scala.tools.eclipse.scalatest.ui.ScalaTestPlugin
 import scala.tools.eclipse.scalatest.ui.TestModel
 import scala.tools.eclipse.scalatest.ui.TestStatus
-import scala.annotation.tailrec
-import org.eclipse.core.runtime.IPath
-import org.eclipse.core.resources.IWorkspaceRoot
-import org.eclipse.core.resources.IFolder
-import org.eclipse.ui.ISelectionService
-import org.eclipse.ui.PlatformUI
-import org.eclipse.swt.widgets.Display
-import org.eclipse.jface.viewers.TreeSelection
-import org.eclipse.jface.viewers.TreeSelection
+
+import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.core.runtime.IProgressMonitor
+import org.eclipse.core.runtime.NullProgressMonitor
+import org.eclipse.core.runtime.Path
+import org.eclipse.debug.core.ILaunch
+import org.eclipse.debug.core.ILaunchConfiguration
 import org.eclipse.jdt.core.IClasspathEntry
 import org.eclipse.jdt.internal.core.PackageFragmentRoot
-import scala.collection.mutable.ListBuffer
+import org.eclipse.jdt.internal.launching.LaunchingMessages
+import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate
+import org.eclipse.jdt.launching.ExecutionArguments
+import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants
+import org.eclipse.jdt.launching.IRuntimeClasspathEntry
+import org.eclipse.jdt.launching.JavaRuntime
+import org.eclipse.jdt.launching.VMRunnerConfiguration
+import org.eclipse.jface.dialogs.MessageDialog
+import org.eclipse.jface.viewers.TreeSelection
+import org.eclipse.swt.widgets.Display
+import org.eclipse.ui.PlatformUI
 
-class OutputDirLocator(configuration: ILaunchConfiguration) {
-  val outputDir = initOutputDir()
-
-  private def initOutputDir() : String = {
-    val default = JavaRuntime.getProjectOutputDirectory(configuration)
-    
-    if (default != null) {
-      return default
-    }
-    
-    val dummy = new Array[String](1)
-    Display.getDefault.syncExec(new Runnable() {
-      def run() {
-        val window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        val selection = window.getSelectionService().getSelection("org.eclipse.jdt.ui.PackageExplorer");
-
-        // Multiple selections from different test packages?
-        // TODO Structured selection?
-        if (selection.isInstanceOf[TreeSelection]) {
-          val treeSelection = selection.asInstanceOf[TreeSelection]
-          treeSelection.getPaths.foreach {
-            // In case of non-hierarchic package view this might be tricky to to get the source root...
-            treePath =>
-              val sourceFolder = treePath.getParentPath
-              val project = JavaRuntime.getJavaProject(configuration)
-              // TODO Assert: there should be only one source folder with a given name
-              val rcp = project.getRawClasspath
-
-              val res = sourceFolder.getLastSegment.asInstanceOf[PackageFragmentRoot].getPath
-              val cpEntry4SourceFolder = project.getRawClasspath.find { cpEntry =>
-                if (cpEntry.getEntryKind == IClasspathEntry.CPE_SOURCE) {
-                  cpEntry.getPath != null &&
-                    cpEntry.getPath == res
-                } else {
-                  false
-                }
-              }
-
-              dummy(0) = cpEntry4SourceFolder.get.getOutputLocation.toString
-          }
-        }
-      }
-    })
-    
-    return dummy(0)
-  }
-}
+import ScalaTestLaunchConstants.INCLUDE_NESTED_FALSE
+import ScalaTestLaunchConstants.INCLUDE_NESTED_TRUE
+import ScalaTestLaunchConstants.SCALATEST_LAUNCH_INCLUDE_NESTED_NAME
+import ScalaTestLaunchConstants.SCALATEST_LAUNCH_TESTS_NAME
+import ScalaTestLaunchConstants.SCALATEST_LAUNCH_TYPE_NAME
+import ScalaTestLaunchConstants.TYPE_FILE
+import ScalaTestLaunchConstants.TYPE_PACKAGE
+import ScalaTestLaunchConstants.TYPE_SUITE
 
 class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
 
@@ -245,11 +203,28 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
     val bootEntry = JavaRuntime.resolveRuntimeClasspath(Array(a), configuration)
     bootEntry.toList.map(_.getLocation())
   }
-  
-  private def escapeScalaTestClasspathComponents(comp: String) : String = {
+
+  /**
+   * A runpath is the list of filenames, directory paths, and/or URLs that Runner uses to load classes for the running test.
+   * If runpath is specified, Runner creates a custom class loader to load classes available on the runpath. The graphical
+   * user interface reloads the test classes anew for each run by creating and using a new instance of the custom class loader
+   * for each run. The classes that comprise the test may also be made available on the classpath, in which case no runpath
+   * need be specified.
+   *
+   * The runpath is specified with the -p option. The -p must be followed by a space, a double quote ("), a white-space-separated
+   * list of paths and URLs, and a double quote. If specifying only one element in the runpath, you can leave off the double quotes,
+   * which only serve to combine a white-space separated list of strings into one command line argument. If you have path elements
+   * that themselves have a space in them, you must place a backslash (\) in front of the space.
+   * 
+   * TODO Link, specify
+   * 
+   * @param comp
+   * @return
+   */
+  private def escapeScalaTestClasspathComponents(comp: String): String = {
     comp.replaceAll(" ", "\\ ").replaceAll("\"", "\\\"")
-  } 
-  
+  }
+
   private def getScalaTestArgs(configuration: ILaunchConfiguration): String = {
     val launchType = configuration.getAttribute(SCALATEST_LAUNCH_TYPE_NAME, TYPE_SUITE)
     launchType match {
@@ -280,28 +255,16 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
         val packageName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "")
         val workspace = ResourcesPlugin.getWorkspace()
 
+        // This might be null for several reasons
         //val outputDir = new File(workspace.getRoot.getLocation.toFile, JavaRuntime.getProjectOutputDirectory(configuration)).getAbsolutePath
-        
-        //        val sourceFolder = selection.
-        //          
-        //        val cpEntry4Source =...
-        //        
-        //        val outputDir = cpEntry4Source. xxx
-
-        // This might be null for some reason!
-        //        val JoutputDir = JavaRuntime.getProjectOutputDirectory(configuration)
-
-        //val outputDir = new OutputDirLocator(configuration).outputDir
 
         val project = JavaRuntime.getJavaProject(configuration)
         val outputDirList = new ListBuffer[String]
 
         val defaultOutputDir = JavaRuntime.getProjectOutputDirectory(configuration)
         if (defaultOutputDir != null) {
-          //outputDirList += defaultOutputDir
           val path = ResourcesPlugin.getWorkspace.getRoot.findMember(defaultOutputDir).getLocation.toFile.getAbsolutePath
           val escaped = escapeScalaTestClasspathComponents(path)
-          //outputDirList += new File(workspace.getRoot.getLocation.toFile, escaped).getAbsolutePath
           outputDirList += path
         }
 
@@ -314,22 +277,9 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
               getClasspath(configuration)
             }
         }
-        
-        val cp = getClasspath(configuration)
-        //val outputDir = outputDirList.toSet.foldLeft("")((acc, act) => acc + " " + escapeScalaTestClasspathComponents(act) ).trim
-        val outputDir = cp.toSet.foldLeft("")((acc, act) => acc + " " + escapeScalaTestClasspathComponents(act) ).trim
-        
-//        val project = JavaRuntime.getJavaProject(configuration)
-//        val apfr = project.getAllPackageFragmentRoots
-//        val pfr = project.getPackageFragmentRoots
-//        val rcp = project.getRawClasspath
-//        val path = project.getOutputLocation()
-//        val root = ResourcesPlugin.getWorkspace().getRoot()
-//        val folder = root.getFolder(path)
-//        //return folder.getLocation()
-//        val outputDir = folder.getLocation.toFile.getAbsolutePath
 
-        //val outputDir = new File(workspace.getRoot.getLocation.toFile, JoutputDir).getAbsolutePath
+        val outputDir = getClasspath(configuration).toSet.foldLeft("")((acc, act) => acc + " " + escapeScalaTestClasspathComponents(act)).trim
+
         if (packageName.length > 0) {
           val includeNested = configuration.getAttribute(SCALATEST_LAUNCH_INCLUDE_NESTED_NAME, INCLUDE_NESTED_FALSE)
           if (includeNested == INCLUDE_NESTED_TRUE)
