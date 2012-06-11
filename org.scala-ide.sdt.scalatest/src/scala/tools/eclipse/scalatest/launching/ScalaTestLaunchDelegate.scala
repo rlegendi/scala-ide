@@ -257,28 +257,8 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
 
         // This might be null for several reasons
         //val outputDir = new File(workspace.getRoot.getLocation.toFile, JavaRuntime.getProjectOutputDirectory(configuration)).getAbsolutePath
-
-        val project = JavaRuntime.getJavaProject(configuration)
-        val outputDirList = new ListBuffer[String]
-
-        val defaultOutputDir = JavaRuntime.getProjectOutputDirectory(configuration)
-        if (defaultOutputDir != null) {
-          val path = ResourcesPlugin.getWorkspace.getRoot.findMember(defaultOutputDir).getLocation.toFile.getAbsolutePath
-          val escaped = escapeScalaTestClasspathComponents(path)
-          outputDirList += path
-        }
-
-        project.getRawClasspath.foreach {
-          cpentry =>
-            val oloc = cpentry.getOutputLocation
-            if (oloc != null) {
-              outputDirList += oloc.toFile.getAbsolutePath.toString
-            } else {
-              getClasspath(configuration)
-            }
-        }
-
-        val outputDir = getClasspath(configuration).toSet.foldLeft("")((acc, act) => acc + " " + escapeScalaTestClasspathComponents(act)).trim
+        
+        val outputDir = getClasspath(configuration).foldLeft("")((acc, act) => acc + " " + escapeScalaTestClasspathComponents(act)).trim
 
         if (packageName.length > 0) {
           val includeNested = configuration.getAttribute(SCALATEST_LAUNCH_INCLUDE_NESTED_NAME, INCLUDE_NESTED_FALSE)
