@@ -197,11 +197,12 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
    * @author rlegendi
    */
   // TODO Needs an expert's review
-  protected def escapeScalaTestClasspathComponent(comp: String): String = {
-     comp.replaceAll("\\s", "\\ ").replaceAll("\"", "\\\"")
+  private[launching] def escapeScalaTestClasspathComponent(comp: String): String = {
+    require(comp != null)
+    return comp.replaceAll("\\s", "\\\\ ").replaceAll("\"", "\\\\\"")
   }
   
-  protected def getScalaTestArgs(configuration: ILaunchConfiguration): String = {
+  private[launching] def getScalaTestArgs(configuration: ILaunchConfiguration): String = {
     val launchType = configuration.getAttribute(SCALATEST_LAUNCH_TYPE_NAME, TYPE_SUITE)
     launchType match {
       case TYPE_SUITE => 
