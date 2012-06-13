@@ -203,6 +203,8 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
   }
   
   private[launching] def getScalaTestArgs(configuration: ILaunchConfiguration): String = {
+    require(configuration != null)
+    
     val launchType = configuration.getAttribute(SCALATEST_LAUNCH_TYPE_NAME, TYPE_SUITE)
     launchType match {
       case TYPE_SUITE => 
