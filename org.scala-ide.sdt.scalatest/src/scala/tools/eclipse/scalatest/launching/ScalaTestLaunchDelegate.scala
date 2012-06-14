@@ -193,7 +193,7 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
    * 
    * @param comp a classpath component as a string 
    * @return a properly escaped version of parameter <code>comp</code> 
-   * @see <a href="">Runner</a>
+   * @see <a href="http://www.scalatest.org/scaladoc/1.8/org/scalatest/tools/Runner$.html">Runner</a> (see section "Specifying a runpath")
    * @author rlegendi
    */
   // TODO Needs an expert's review
