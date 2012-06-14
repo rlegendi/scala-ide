@@ -9,7 +9,13 @@ import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants
 import org.eclipse.debug.internal.core.LaunchConfiguration
 import org.mockito.Matchers
 import org.mockito.Mockito
+import org.junit.runner.RunWith
+import org.powermock.modules.junit4.PowerMockRunner
+import org.powermock.core.classloader.annotations.PrepareForTest
+import org.powermock.api.mockito.PowerMockito
 
+@RunWith(classOf[PowerMockRunner])
+@PrepareForTest(Array(classOf[ScalaTestLaunchDelegate]))
 class ScalaTestLaunchDelegateTest {
 
   // --------------------------------------------------------------------------
@@ -60,15 +66,17 @@ class ScalaTestLaunchDelegateTest {
     def delegate = new ScalaTestLaunchDelegate
     delegate.getScalaTestArgs(null)
   }
+  
+  abstract class MyLaunchConfiguration extends ILaunchConfiguration
 
   private def evalScalaTestArgs(cps: String*): String = {
-    val config = mock(classOf[ILaunchConfiguration])
+    val config = mock(classOf[MyLaunchConfiguration])
 
     when(config.getAttribute(SCALATEST_LAUNCH_TYPE_NAME, TYPE_SUITE)).thenReturn(TYPE_PACKAGE)
     when(config.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "")).thenReturn("testpkg")
     when(config.getAttribute(SCALATEST_LAUNCH_INCLUDE_NESTED_NAME, INCLUDE_NESTED_FALSE)).thenReturn(INCLUDE_NESTED_TRUE)
 
-    def delegate = spy(new ScalaTestLaunchDelegate)
+    //def delegate = spy(new ScalaTestLaunchDelegate)
     //def delegate = mock(classOf[ScalaTestLaunchDelegate])
     //when(delegate.getClasspath(config)).thenReturn(cps.toArray)
     
@@ -80,7 +88,11 @@ class ScalaTestLaunchDelegateTest {
     
     //when(delegate.isAllowTerminate(config)).thenReturn(false)
     
-    stub(delegate.getClasspath(Matchers.any[ILaunchConfiguration])).toReturn(null)
+    //stub(delegate.getClasspath(Matchers.any[ILaunchConfiguration])).toReturn(null)
+    
+    val delegate = PowerMockito.spy(new ScalaTestLaunchDelegate)
+    doReturn(cps.toArray[String]).when(delegate).getClasspath(config)
+    //when(delegate.getClasspath(config)).thenReturn(cps.toArray)
     
     delegate.getScalaTestArgs(config)
   }

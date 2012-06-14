@@ -233,7 +233,6 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
           ""
       case TYPE_PACKAGE =>
         val packageName = configuration.getAttribute(IJavaLaunchConfigurationConstants.ATTR_MAIN_TYPE_NAME, "")
-        val workspace = ResourcesPlugin.getWorkspace()
         
         // -----------------------------------------------------------------------------------------------------------------------------------
         // This might be problematic in some specific cases, e.g. when the project is not located on the workspace (imported as an external
