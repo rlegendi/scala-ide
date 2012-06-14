@@ -90,29 +90,29 @@ class ScalaTestLaunchDelegateTest {
     val res = evalScalaTestArgs("")
     assertEquals("-p \"\" -w testpkg", res)
   }
-  
+
   @Test
   def argsBuildingForSingleClassPath() {
     val res = evalScalaTestArgs("some.jar")
     assertEquals("-p \"some.jar\" -w testpkg", res)
   }
-  
+
   @Test
   def argsBuildingForMultipleSimpleClassPath() {
     val res = evalScalaTestArgs("some.jar", "other.jar")
     assertEquals("-p \"some.jar other.jar\" -w testpkg", res)
   }
-  
+
   @Test
   def argsBuildingForFolderAndJarClassPath() {
     val res = evalScalaTestArgs("some/folder", "and/", "some.jar")
     assertEquals("-p \"some/folder and/ some.jar\" -w testpkg", res)
   }
-  
+
   @Test
   def argsBuildingForSingleSpacedClassPath() {
     val res = evalScalaTestArgs("some.jar", "and a spaced folder", "andSomething/else")
     assertEquals("-p \"some.jar and\\ a\\ spaced\\ folder andSomething/else\" -w testpkg", res)
   }
-  
+
 }
