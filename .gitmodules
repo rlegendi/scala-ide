@@ -1,0 +1,3 @@
+[submodule "scalatest"]
+	path = scalatest
+	url = https://github.com/rlegendi/scalatest
