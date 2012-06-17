@@ -219,7 +219,7 @@ class ScalaTestLaunchDelegate extends AbstractJavaLaunchConfigurationDelegate {
         if (filePortablePath.length > 0) {
           val scSrcFileOpt = ScalaSourceFile.createFromPath(filePortablePath)
           scSrcFileOpt match {
-            case Some(scSrcFile) => 
+            case Some(scSrcFile) =>
               scSrcFile.getTypes
                 .filter(ScalaTestLaunchShortcut.isScalaTestSuite(_))
                 .map(iType => "-s " + iType.getFullyQualifiedName)
