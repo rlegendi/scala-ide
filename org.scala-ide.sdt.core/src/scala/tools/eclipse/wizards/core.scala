@@ -6,6 +6,29 @@
  */
 package scala.tools.eclipse.wizards
 
+import org.eclipse.swt.widgets.Composite
+import scala.tools.eclipse.util.Utils
+import org.eclipse.jdt.core.IPackageFragment
+import org.eclipse.jface.operation.IRunnableWithProgress
+import org.eclipse.core.runtime.IProgressMonitor
+import scala.tools.nsc.util.Chars
+import org.eclipse.core.resources.IFolder
+
+class NewAcceptanceSpecificationWizardPage extends {
+  val declarationType = "Acceptance Specification"
+} with AbstractNewElementWizardPage with Spec2Options {
+  override def createControl(parent: Composite) = {
+    super.createControl(parent)
+    setSuperClass("org.specs2.Specification", false)
+  }
+  
+}
+
+class NewUnitSpecificationWizardPage extends {
+  val declarationType = "Unit Specification"
+} with AbstractNewElementWizardPage
+  with Spec2Options
+
 class NewClassWizardPage extends {
   val declarationType = "Class"
 } with AbstractNewElementWizardPage
@@ -93,8 +116,74 @@ trait MuteLowerCaseTypeNameWarning extends AbstractNewElementWizardPage {
   }
 }
 
+object SpecificationWizard {
+
+  private val TEMPLATE_ACCEPTANCE_SPEC =
+    """object %s {
+      |  def main(args: Array[String]) {
+      |    
+      |  }
+      |}""".stripMargin
+
+  private val TEMPLATE_UNIT_SPEC =
+    """object %s extends App {
+      |
+      |}""".stripMargin
+
+}
+
+class NewAcceptanceSpecificationWizard
+  extends AbstractNewElementWizard(new NewAcceptanceSpecificationWizardPage) {
+  
+//  override def performFinish(): Boolean = {
+//    val fileName = wizardPage.getTypeName
+//    
+//    val op = new IRunnableWithProgress() {
+//    }
+    
+//        try {
+//            getContainer().run(true, false, op);
+//        } catch (InterruptedException e) {
+//            return false;
+//        } catch (InvocationTargetException e) {
+//            Throwable realException = e.getTargetException();
+//            MessageDialog.openError(getShell(), "Error", realException.getMessage());
+//            return false;
+//        }
+//        return true;
+//  }
+  
+  override def performFinish: Boolean = {
+    Utils.tryExecute(createApplication(wizardPage.getTypeName, page.getSelectedPackage)).getOrElse(false)
+  }
+  
+  private def createApplication(applicationName: String, pkg: IPackageFragment): Boolean = {
+    val nameOk = applicationName.nonEmpty && Chars.isIdentifierStart(applicationName(0)) &&
+      applicationName.tail.forall(Chars.isIdentifierPart)
+    if (!nameOk) {
+      wizardPage.setErrorMessage("Not a valid name.")
+      return false
+    }
+
+    val file = pkg.getResource.asInstanceOf[IFolder].getFile(applicationName + ".scala")
+    if (file.exists) {
+      wizardPage.setErrorMessage("Resource with same name already exists.")
+      return false
+    }
+
+    val source = createSource(applicationName, pkg)
+    file.create(new StringBufferInputStream(source), true, null)
+    openInEditor(file)
+    addLaunchConfig(applicationName, pkg)
+    true
+  }
+}
+
+class NewUnitSpecificationWizard
+  extends AbstractNewElementWizard(new NewUnitSpecificationWizardPage)
+
 class NewClassWizard
-  extends AbstractNewElementWizard(new NewClassWizardPage())
+extends AbstractNewElementWizard(new NewClassWizardPage())
 
 class NewTraitWizard
   extends AbstractNewElementWizard(new NewTraitWizardPage())

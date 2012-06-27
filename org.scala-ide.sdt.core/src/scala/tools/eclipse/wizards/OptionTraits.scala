@@ -137,3 +137,18 @@ trait TraitOptions { self: AbstractNewElementWizardPage =>
   def specifyModifierControls(composite: Composite, columns: Int) {}
 }
 
+trait Spec2Options { self: AbstractNewElementWizardPage =>
+
+  def initializeOptions(dialogSettings: IDialogSettings) {
+	methodStubButtons.enableSelectionButton(0, false)
+	methodStubButtons.setSelection(0, false)
+	
+	methodStubButtons.enableSelectionButton(1, false)
+	methodStubButtons.setSelection(1, false)
+	
+	methodStubButtons.enableSelectionButton(2, false)
+	methodStubButtons.setSelection(2, false)
+  }
+	  
+  def specifyModifierControls(composite: Composite, columns: Int) {}
+}

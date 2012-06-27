@@ -11,6 +11,7 @@ import org.eclipse.jdt.ui.JavaUI
 import org.eclipse.ui.{ IPageLayout, IPerspectiveFactory }
 import org.eclipse.ui.console.IConsoleConstants
 import org.eclipse.ui.navigator.resources.ProjectExplorer
+import org.eclipse.jface.action.Separator
 
 class PerspectiveFactory extends IPerspectiveFactory {
   def createInitialLayout(layout : IPageLayout) = {
@@ -28,6 +29,9 @@ class PerspectiveFactory extends IPerspectiveFactory {
     layout.addNewWizardShortcut(ScalaPlugin.plugin.objectWizId)
     layout.addNewWizardShortcut(ScalaPlugin.plugin.packageObjectWizId)
     layout.addNewWizardShortcut(ScalaPlugin.plugin.applicationWizId)
+    layout.addNewWizardShortcut(ScalaPlugin.plugin.accSpecs2WizId)
+    layout.addNewWizardShortcut(ScalaPlugin.plugin.unitSpecs2WizId)
+
     layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder")
     layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.file")
     
