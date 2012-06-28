@@ -87,8 +87,6 @@ class ScalaPlugin extends AbstractUIPlugin with PluginLogConfigurator with IReso
   def applicationWizId = wizardId("Application")
   def projectWizId = wizardId("Project")
   def netProjectWizId = wizardId("NetProject")
-  def accSpecs2WizId  = wizardId("AccSpecs2")
-  def unitSpecs2WizId = wizardId("UnitSpecs2")
 
   def editorId = "scala.tools.eclipse.ScalaSourceFileEditor"
   def builderId = pluginId + ".scalabuilder"

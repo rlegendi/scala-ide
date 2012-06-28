@@ -6,29 +6,6 @@
  */
 package scala.tools.eclipse.wizards
 
-import org.eclipse.swt.widgets.Composite
-import scala.tools.eclipse.util.Utils
-import org.eclipse.jdt.core.IPackageFragment
-import org.eclipse.jface.operation.IRunnableWithProgress
-import org.eclipse.core.runtime.IProgressMonitor
-import scala.tools.nsc.util.Chars
-import org.eclipse.core.resources.IFolder
-
-class NewAcceptanceSpecificationWizardPage extends {
-  val declarationType = "Acceptance Specification"
-} with AbstractNewElementWizardPage with Spec2Options {
-  override def createControl(parent: Composite) = {
-    super.createControl(parent)
-    setSuperClass("org.specs2.Specification", false)
-  }
-  
-}
-
-class NewUnitSpecificationWizardPage extends {
-  val declarationType = "Unit Specification"
-} with AbstractNewElementWizardPage
-  with Spec2Options
-
 class NewClassWizardPage extends {
   val declarationType = "Class"
 } with AbstractNewElementWizardPage
@@ -132,56 +109,6 @@ object SpecificationWizard {
 
 }
 
-class NewAcceptanceSpecificationWizard
-  extends AbstractNewElementWizard(new NewAcceptanceSpecificationWizardPage) {
-  
-//  override def performFinish(): Boolean = {
-//    val fileName = wizardPage.getTypeName
-//    
-//    val op = new IRunnableWithProgress() {
-//    }
-    
-//        try {
-//            getContainer().run(true, false, op);
-//        } catch (InterruptedException e) {
-//            return false;
-//        } catch (InvocationTargetException e) {
-//            Throwable realException = e.getTargetException();
-//            MessageDialog.openError(getShell(), "Error", realException.getMessage());
-//            return false;
-//        }
-//        return true;
-//  }
-  
-  override def performFinish: Boolean = {
-    Utils.tryExecute(createApplication(wizardPage.getTypeName, page.getSelectedPackage)).getOrElse(false)
-  }
-  
-  private def createApplication(applicationName: String, pkg: IPackageFragment): Boolean = {
-    val nameOk = applicationName.nonEmpty && Chars.isIdentifierStart(applicationName(0)) &&
-      applicationName.tail.forall(Chars.isIdentifierPart)
-    if (!nameOk) {
-      wizardPage.setErrorMessage("Not a valid name.")
-      return false
-    }
-
-    val file = pkg.getResource.asInstanceOf[IFolder].getFile(applicationName + ".scala")
-    if (file.exists) {
-      wizardPage.setErrorMessage("Resource with same name already exists.")
-      return false
-    }
-
-    val source = createSource(applicationName, pkg)
-    file.create(new StringBufferInputStream(source), true, null)
-    openInEditor(file)
-    addLaunchConfig(applicationName, pkg)
-    true
-  }
-}
-
-class NewUnitSpecificationWizard
-  extends AbstractNewElementWizard(new NewUnitSpecificationWizardPage)
-
 class NewClassWizard
 extends AbstractNewElementWizard(new NewClassWizardPage())
 
@@ -204,7 +131,19 @@ class NewPackageObjectWizard
   /** Rename the `package object` resource's file from `_package.scala` to `package.scala`.*/
   private def renameResource() {
     import scala.tools.eclipse.util.SWTUtils
-    import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange
+import scala.tools.eclipse.wizards.AbstractNewElementWizard;
+import scala.tools.eclipse.wizards.AbstractNewElementWizardPage;
+import scala.tools.eclipse.wizards.ClassOptions;
+import scala.tools.eclipse.wizards.MuteLowerCaseTypeNameWarning;
+import scala.tools.eclipse.wizards.NewClassWizardPage;
+import scala.tools.eclipse.wizards.NewObjectWizardPage;
+import scala.tools.eclipse.wizards.NewPackageObjectWizardPage;
+import scala.tools.eclipse.wizards.NewTraitWizardPage;
+import scala.tools.eclipse.wizards.ObjectOptions;
+import scala.tools.eclipse.wizards.PackageObjectOptions;
+import scala.tools.eclipse.wizards.TraitOptions;
+
+import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange
 
     SWTUtils.asyncExec({
       val res = wizardPage.getModifiedResource()

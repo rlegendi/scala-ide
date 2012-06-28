@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Specs2 ScalaTest Plugin
-Bundle-SymbolicName: org.scala-ide.sdt.specs2;singleton:=true
+Bundle-SymbolicName: scala.tools.eclipse.specs2;singleton:=true
 Bundle-Version: 1.0
 Bundle-Vendor: scala-ide.org
 Bundle-ActivationPolicy: lazy
@@ -65,5 +65,7 @@ Import-Package:
  scala.tools.eclipse.contribution.weaving.jdt.ui.javaeditor;apply-aspects:=false,
  scala.tools.eclipse.contribution.weaving.jdt.ui.javaeditor.formatter;apply-aspects:=false
 Export-Package: 
- org.scalatest.specs2
+ scala.tools.eclipse.specs2,
+ scala.tools.eclipse.specs2.wizards,
+ scala.tools.eclipse.specs2.wizards.pages
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
