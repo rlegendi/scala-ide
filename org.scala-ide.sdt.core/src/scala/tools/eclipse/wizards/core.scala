@@ -93,24 +93,8 @@ trait MuteLowerCaseTypeNameWarning extends AbstractNewElementWizardPage {
   }
 }
 
-object SpecificationWizard {
-
-  private val TEMPLATE_ACCEPTANCE_SPEC =
-    """object %s {
-      |  def main(args: Array[String]) {
-      |    
-      |  }
-      |}""".stripMargin
-
-  private val TEMPLATE_UNIT_SPEC =
-    """object %s extends App {
-      |
-      |}""".stripMargin
-
-}
-
 class NewClassWizard
-extends AbstractNewElementWizard(new NewClassWizardPage())
+  extends AbstractNewElementWizard(new NewClassWizardPage())
 
 class NewTraitWizard
   extends AbstractNewElementWizard(new NewTraitWizardPage())
@@ -131,19 +115,7 @@ class NewPackageObjectWizard
   /** Rename the `package object` resource's file from `_package.scala` to `package.scala`.*/
   private def renameResource() {
     import scala.tools.eclipse.util.SWTUtils
-import scala.tools.eclipse.wizards.AbstractNewElementWizard;
-import scala.tools.eclipse.wizards.AbstractNewElementWizardPage;
-import scala.tools.eclipse.wizards.ClassOptions;
-import scala.tools.eclipse.wizards.MuteLowerCaseTypeNameWarning;
-import scala.tools.eclipse.wizards.NewClassWizardPage;
-import scala.tools.eclipse.wizards.NewObjectWizardPage;
-import scala.tools.eclipse.wizards.NewPackageObjectWizardPage;
-import scala.tools.eclipse.wizards.NewTraitWizardPage;
-import scala.tools.eclipse.wizards.ObjectOptions;
-import scala.tools.eclipse.wizards.PackageObjectOptions;
-import scala.tools.eclipse.wizards.TraitOptions;
-
-import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange
+    import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange
 
     SWTUtils.asyncExec({
       val res = wizardPage.getModifiedResource()

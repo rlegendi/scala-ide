@@ -9,3 +9,19 @@ class Specs2Plugin {
   def accSpecs2WizId: String = classOf[NewAcceptanceSpecificationWizard].getName
   def unitSpecs2WizId: String = classOf[NewUnitSpecificationWizard].getName
 }
+
+object SpecificationWizard {
+
+  private val TEMPLATE_ACCEPTANCE_SPEC =
+    """object %s {
+      |  def main(args: Array[String]) {
+      |    
+      |  }
+      |}""".stripMargin
+
+  private val TEMPLATE_UNIT_SPEC =
+    """object %s extends App {
+      |
+      |}""".stripMargin
+
+}

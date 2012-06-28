@@ -351,36 +351,6 @@
             <description>Create a Scala application</description>
             <selection class="java.lang.Object"/>
       </wizard>
-      <wizard
-            category="org.scala-ide.sdt.core.wizards"
-            class="scala.tools.eclipse.wizards.NewAcceptanceSpecificationWizard"
-            finalPerspective="org.scala-ide.sdt.core.perspective"
-            icon="icons/full/etool16/newacceptance_specification_wiz.gif"
-            id="org.scala-ide.sdt.core.wizards.newAccSpecs2"
-            name="Specs2 Acceptance Specification"
-            project="false">
-         <selection
-               class="java.lang.Object">
-         </selection>
-         <description>
-            Create a Specs2 Acceptance Specification
-         </description>
-      </wizard>
-      <wizard
-            category="org.scala-ide.sdt.core.wizards"
-            class="scala.tools.eclipse.wizards.NewUnitSpecificationWizard"
-            finalPerspective="org.scala-ide.sdt.core.perspective"
-            icon="icons/full/etool16/newunit_specification_wiz.gif"
-            id="org.scala-ide.sdt.core.wizards.newUnitSpecs2"
-            name="Specs2 Unit Specification"
-            project="false">
-         <selection
-               class="java.lang.Object">
-         </selection>
-         <description>
-            Create a Specs2 Unit Specification
-         </description>
-      </wizard>
    </extension>
    <extension
          point="org.eclipse.ui.ide.projectNatureImages">
