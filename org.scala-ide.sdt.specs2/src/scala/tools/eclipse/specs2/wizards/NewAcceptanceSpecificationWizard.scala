@@ -17,23 +17,24 @@ import scalariform.formatter.ScalaFormatter
 import scala.tools.eclipse.formatter.FormatterPreferences
 import org.eclipse.core.resources.IFile
 import org.eclipse.ui.ide.IDE
+import java.io.ByteArrayInputStream
 
 // TODO Generate comments ain't working
 class NewAcceptanceSpecificationWizard
   extends AbstractNewElementWizard(new NewAcceptanceSpecificationWizardPage) {
 
   private def createSource(applicationName: String, pkg: IPackageFragment): String = {
-    val appExists = try { Class.forName("specs2.Specification"); true } catch { case _ => false }
     val packageDeclaration = if (pkg.isDefaultPackage) "" else "package " + pkg.getElementName + "" + Constants.EoL * 2
-    val objectTemplate = Constants.TEMPLATE_ACCEPTANCE_SPEC
-    val unformatted = packageDeclaration + objectTemplate.format(applicationName)
+    val templateSource = Constants.TEMPLATE_ACCEPTANCE_SPEC
+    val unformatted = packageDeclaration + templateSource.format(applicationName)
     ScalaFormatter.format(unformatted, FormatterPreferences.getPreferences(pkg.getResource.getProject))
   }
 
   private def createApplication(applicationName: String, pkg: IPackageFragment): Boolean = {
     val file = pkg.getResource.asInstanceOf[IFolder].getFile(applicationName + ".scala")
     val source = createSource(applicationName, pkg)
-    file.create(new StringBufferInputStream(source), true, null)
+    //file.create(new StringBufferInputStream(source), true, null)
+    file.create(new ByteArrayInputStream(source.getBytes), true, null)
     openInEditor(file)
 
     true
