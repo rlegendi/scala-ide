@@ -15,11 +15,13 @@ import org.eclipse.jface.dialogs.MessageDialog
 import scala.tools.eclipse.specs2.Constants
 import scalariform.formatter.ScalaFormatter
 import scala.tools.eclipse.formatter.FormatterPreferences
+import org.eclipse.core.resources.IFile
+import org.eclipse.ui.ide.IDE
 
 class NewAcceptanceSpecificationWizard
   extends AbstractNewElementWizard(new NewAcceptanceSpecificationWizardPage) {
 
-    private def createSource(applicationName: String, pkg: IPackageFragment): String = {
+  private def createSource(applicationName: String, pkg: IPackageFragment): String = {
     val appExists = try { Class.forName("specs2.Specification"); true } catch { case _ => false }
     val packageDeclaration = if (pkg.isDefaultPackage) "" else "package " + pkg.getElementName + "" + Constants.EoL * 2
     val objectTemplate = Constants.TEMPLATE_ACCEPTANCE_SPEC
@@ -44,14 +46,24 @@ class NewAcceptanceSpecificationWizard
     val source = createSource(applicationName, pkg)
     file.create(new StringBufferInputStream(source), true, null)
     openInEditor(file)
-    addLaunchConfig(applicationName, pkg)
+
+    //addLaunchConfig(applicationName, pkg)
     true
   }
 
-  override def performFinish: Boolean =
-    tryExecute(createApplication(page.getApplicationName, page.getSelectedPackage)).getOrElse(false)
+  // TODO This code segment is identical to NewApplicationWizard.openInEditor(), should it be put into a common superclass?
+  private def openInEditor(file: IFile) = {
+    selectAndReveal(file)
+    for {
+      workbenchWindow <- Option(getWorkbench.getActiveWorkbenchWindow)
+      page <- Option(workbenchWindow.getActivePage)
+    } IDE.openEditor(page, file, true)
+  }
 
-  
+  override def performFinish: Boolean =
+    //Utils.tryExecute(createApplication(wizardPage.getApplicationName, wizardPage.getSelectedPackage)).getOrElse(false)
+    Utils.tryExecute(createApplication(wizardPage.getTypeName, wizardPage.getPackageFragment)).getOrElse(false)
+
   /*
   //  override def performFinish(): Boolean = {
   //    val fileName = wizardPage.getTypeName
