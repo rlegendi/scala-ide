@@ -44,6 +44,8 @@ abstract class ASpecificationWizard(val templateName: String, override val wizar
   }
 
   override def performFinish: Boolean = {
+    // TODO Check if we can load the required SpecificationStructure
+    //val appExists = try { Class.forName("specs2.Specification / specs2.mutable.Specification"); true } catch { case _ => false }
     Utils.tryExecute(createApplication(wizardPage.getTypeName, wizardPage.getPackageFragment)).getOrElse(false)
   }
 }

@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Composite
 
 class NewAcceptanceSpecificationWizardPage extends {
   val declarationType = "Acceptance Specification"
-  // TODO Refactor DEFAULT_SUPER_TYPE
+  // TODO Refactor DEFAULT_SUPER_TYPE?
 } with AbstractNewElementWizardPage
   with TSpec2Options {
   override def createControl(parent: Composite): Unit = {

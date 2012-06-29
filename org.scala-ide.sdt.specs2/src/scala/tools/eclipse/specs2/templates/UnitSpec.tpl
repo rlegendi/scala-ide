@@ -1,16 +1,15 @@
 import org.specs2.mutable._
+import org.scalatest.WrapWith
+import org.scalatest.specs2.Spec2Runner
 
+@WrapWith(classOf[Spec2Runner])
 class HelloWorldSpec extends Specification {
-  
-  "The 'Hello world' string" should {
-    "contain 11 characters" in {
-      "Hello world" must have size(11)
+  "When listening to music, one" should {
+    "find Rotfront great" in {
+      "Emigrantski Raggamuffin" must have size(23)
     }
-    "start with 'Hello'" in {
-      "Hello world" must startWith("Hello")
-    }
-    "end with 'world'" in {
-      "Hello world" must endWith("world")
+    "not awaken Musta-Krakish at a Deathklok concert" in {
+      success
     }
   }
 }
