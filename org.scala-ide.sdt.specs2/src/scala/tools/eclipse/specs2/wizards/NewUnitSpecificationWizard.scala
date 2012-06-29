@@ -1,6 +1,5 @@
 package scala.tools.eclipse.specs2.wizards
 
-import scala.tools.eclipse.specs2.Utils
 import scala.tools.eclipse.specs2.wizards.pages.NewUnitSpecificationWizardPage
 
 class NewUnitSpecificationWizard

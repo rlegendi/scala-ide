@@ -7,7 +7,8 @@ import File.{ pathSeparator => / }
 object Utils {
   def readContents(fname: String): String = {
     val cl = Utils.getClass
-    val url = cl.getResource("templates" + / + fname)
+    val path = "templates" + File.separator + fname
+    val url = cl.getResource(path)
     val uri = url.toURI
 
     val file = new File(uri)

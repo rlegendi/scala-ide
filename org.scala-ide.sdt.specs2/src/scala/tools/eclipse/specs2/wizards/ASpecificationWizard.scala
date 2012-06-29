@@ -12,6 +12,7 @@ import scalariform.formatter.ScalaFormatter
 import scala.tools.eclipse.formatter.FormatterPreferences
 import scala.tools.eclipse.util.Utils
 
+// TODO Generate comments ain't working
 abstract class ASpecificationWizard(val templateName: String, override val wizardPage: AbstractNewElementWizardPage)
   extends AbstractNewElementWizard(wizardPage) {
   
