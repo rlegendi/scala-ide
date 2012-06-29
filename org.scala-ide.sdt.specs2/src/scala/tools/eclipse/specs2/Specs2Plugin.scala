@@ -3,7 +3,6 @@ package scala.tools.eclipse.specs2
 import scala.tools.eclipse.specs2.wizards.NewAcceptanceSpecificationWizard
 import scala.tools.eclipse.specs2.wizards.NewUnitSpecificationWizard
 
-
 object Specs2Plugin {
   def pluginId: String = "scala.tools.eclipse.specs2"
 }
