@@ -18,6 +18,7 @@ import scala.tools.eclipse.formatter.FormatterPreferences
 import org.eclipse.core.resources.IFile
 import org.eclipse.ui.ide.IDE
 
+// TODO Generate comments ain't working
 class NewAcceptanceSpecificationWizard
   extends AbstractNewElementWizard(new NewAcceptanceSpecificationWizardPage) {
 
@@ -30,18 +31,18 @@ class NewAcceptanceSpecificationWizard
   }
 
   private def createApplication(applicationName: String, pkg: IPackageFragment): Boolean = {
-    val nameOk = applicationName.nonEmpty && Chars.isIdentifierStart(applicationName(0)) &&
-      applicationName.tail.forall(Chars.isIdentifierPart)
-    if (!nameOk) {
-      wizardPage.setErrorMessage("Not a valid name.")
-      return false
-    }
-
+//    val nameOk = applicationName.nonEmpty && Chars.isIdentifierStart(applicationName(0)) &&
+//      applicationName.tail.forall(Chars.isIdentifierPart)
+//    if (!nameOk) {
+//      wizardPage.setErrorMessage("Not a valid name.")
+//      return false
+//    }
+//
     val file = pkg.getResource.asInstanceOf[IFolder].getFile(applicationName + ".scala")
-    if (file.exists) {
-      wizardPage.setErrorMessage("Resource with same name already exists.")
-      return false
-    }
+//    if (file.exists) {
+//      wizardPage.setErrorMessage("Resource with same name already exists.")
+//      return false
+//    }
 
     val source = createSource(applicationName, pkg)
     file.create(new StringBufferInputStream(source), true, null)
