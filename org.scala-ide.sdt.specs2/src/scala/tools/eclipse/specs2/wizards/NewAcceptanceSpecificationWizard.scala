@@ -47,7 +47,6 @@ class NewAcceptanceSpecificationWizard
     file.create(new StringBufferInputStream(source), true, null)
     openInEditor(file)
 
-    //addLaunchConfig(applicationName, pkg)
     true
   }
 
@@ -61,79 +60,5 @@ class NewAcceptanceSpecificationWizard
   }
 
   override def performFinish: Boolean =
-    //Utils.tryExecute(createApplication(wizardPage.getApplicationName, wizardPage.getSelectedPackage)).getOrElse(false)
     Utils.tryExecute(createApplication(wizardPage.getTypeName, wizardPage.getPackageFragment)).getOrElse(false)
-
-  /*
-  //  override def performFinish(): Boolean = {
-  //    val fileName = wizardPage.getTypeName
-  //    
-  //    val op = new IRunnableWithProgress() {
-  //    }
-
-  //        try {
-  //            getContainer().run(true, false, op);
-  //        } catch (InterruptedException e) {
-  //            return false;
-  //        } catch (InvocationTargetException e) {
-  //            Throwable realException = e.getTargetException();
-  //            MessageDialog.openError(getShell(), "Error", realException.getMessage());
-  //            return false;
-  //        }
-  //        return true;
-  //  }
-
-  override def performFinish: Boolean = {
-
-    // For handling the long operation
-    val op = new IRunnableWithProgress() {
-      override def run(monitor: IProgressMonitor): Unit = { // throws InvocationTargetException
-        try {
-          doFinish(monitor)
-        } catch {
-          case e: CoreException => throw new InvocationTargetException(e)
-        } finally {
-          monitor.done
-        }
-      }
-    }
-
-    // TODO Any way like this?
-    //Utils.tryExecute(() => {getContainer().run(true, false, op); true}).getOrElse(false)
-
-    try {
-      getContainer().run(true, false, op)
-      return true
-    } catch {
-      case e: InvocationTargetException =>
-        MessageDialog.openError(getShell(), "Error", e.getTargetException.getMessage);
-        return false
-    }
-  }
-
-  private def doFinish(monitor: IProgressMonitor): Unit = {
-    createApplication(wizardPage.getTypeName, wizardPage.getSelectedPackage)
-  }
-
-  private def createApplication(applicationName: String, pkg: IPackageFragment): Boolean = {
-    val nameOk = applicationName.nonEmpty && Chars.isIdentifierStart(applicationName(0)) &&
-      applicationName.tail.forall(Chars.isIdentifierPart)
-    if (!nameOk) {
-      wizardPage.setErrorMessage("Not a valid name.")
-      return false
-    }
-
-    val file = pkg.getResource.asInstanceOf[IFolder].getFile(applicationName + ".scala")
-    if (file.exists) {
-      wizardPage.setErrorMessage("Resource with same name already exists.")
-      return false
-    }
-
-    val source = createSource(applicationName, pkg)
-    file.create(new StringBufferInputStream(source), true, null)
-    openInEditor(file)
-    addLaunchConfig(applicationName, pkg)
-    true
-  }
-  */
 }
