@@ -6,15 +6,13 @@ import File.{ pathSeparator => / }
 
 object Utils {
   def readContents(fname: String): String = {
-    val cl = Utils.getClass
-    val path = "templates" + File.separator + fname
-    val url = cl.getResource(path)
-    val uri = url.toURI
+    val url = Utils.getClass.getResource("templates" + File.separator + fname)
 
-    val file = new File(uri)
-    val fp = file.getAbsolutePath
+    if (null == url) {
+      return "// Error: Specs2 templates missing. Cannot create a sample specification, sry :S"
+    }
 
-    val source = scala.io.Source.fromFile(uri)
+    val source = scala.io.Source.fromFile(url.toURI)
     val lines = source.mkString
     source.close()
 
