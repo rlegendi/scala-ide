@@ -7,7 +7,7 @@ class NewUnitSpecificationWizardPage extends {
   val declarationType = "Unit Specification"
 } with AbstractNewElementWizardPage
   with TSpec2Options {
-  override def createControl(parent: Composite) = {
+  override def createControl(parent: Composite): Unit = {
     super.createControl(parent)
     setSuperClass("org.specs2.mutable.Specification", false)
   }

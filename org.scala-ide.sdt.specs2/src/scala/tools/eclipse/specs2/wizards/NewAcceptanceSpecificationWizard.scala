@@ -31,19 +31,7 @@ class NewAcceptanceSpecificationWizard
   }
 
   private def createApplication(applicationName: String, pkg: IPackageFragment): Boolean = {
-//    val nameOk = applicationName.nonEmpty && Chars.isIdentifierStart(applicationName(0)) &&
-//      applicationName.tail.forall(Chars.isIdentifierPart)
-//    if (!nameOk) {
-//      wizardPage.setErrorMessage("Not a valid name.")
-//      return false
-//    }
-//
     val file = pkg.getResource.asInstanceOf[IFolder].getFile(applicationName + ".scala")
-//    if (file.exists) {
-//      wizardPage.setErrorMessage("Resource with same name already exists.")
-//      return false
-//    }
-
     val source = createSource(applicationName, pkg)
     file.create(new StringBufferInputStream(source), true, null)
     openInEditor(file)
@@ -60,6 +48,7 @@ class NewAcceptanceSpecificationWizard
     } IDE.openEditor(page, file, true)
   }
 
-  override def performFinish: Boolean =
+  override def performFinish: Boolean = {
     Utils.tryExecute(createApplication(wizardPage.getTypeName, wizardPage.getPackageFragment)).getOrElse(false)
+  }
 }
