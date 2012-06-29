@@ -3,7 +3,7 @@ import org.scalatest.WrapWith
 import org.scalatest.specs2.Spec2Runner
 
 @WrapWith(classOf[Spec2Runner])
-class HelloWorldSpec extends Specification {
+class %s extends Specification {
   "When listening to music, one" should {
     "find Rotfront great" in {
       "Emigrantski Raggamuffin" must have size(23)
