@@ -16,7 +16,7 @@ import scala.tools.eclipse.util.Utils
 abstract class ASpecificationWizard(val templateName: String, override val wizardPage: AbstractNewElementWizardPage)
   extends AbstractNewElementWizard(wizardPage) {
   
-  val TEMPLATE: String = scala.tools.eclipse.specs2.Utils.readContents(templateName)
+  val TEMPLATE: String = scala.tools.eclipse.specs2.Utils.readFileContents(templateName)
   
   private def createSource(applicationName: String, pkg: IPackageFragment): String = {
     val packageDeclaration = if (pkg.isDefaultPackage) "" else "package " + pkg.getElementName + "" + Constants.EoL * 2

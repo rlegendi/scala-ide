@@ -5,7 +5,7 @@ import java.io.File
 import File.{ pathSeparator => / }
 
 object Utils {
-  def readContents(fname: String): String = {
+  def readFileContents(fname: String): String = {
     val url = Utils.getClass.getResource("templates" + File.separator + fname)
 
     if (null == url) {
