@@ -2,7 +2,7 @@
 <templates>
 
 	<template name="should"
-			description="A unit specification uses should/in blocks which constructs an example."
+			description="A unit specification uses should/in blocks to construct examples."
 			id="scala.specs2.template.should"
 			context="org.scala-ide.sdt.core.templates"
 			enabled="true"
@@ -13,7 +13,7 @@
 }</template>
 
 	<template name="can"
-			description="A unit specification uses can/in blocks which constructs an example."
+			description="A unit specification uses can/in blocks to construct examples."
 			id="scala.specs2.template.can"
 			context="org.scala-ide.sdt.core.templates"
 			enabled="true"
@@ -24,8 +24,8 @@
 }</template>
 
 	<template name=">>"
-			description="Create an example with no appended text."
-			id="scala.specs2.template.should"
+			description="Create examples with no appended text."
+			id="scala.specs2.template.noTextExamples"
 			context="org.scala-ide.sdt.core.templates"
 			enabled="true"
 >"${fragment}" >> {
@@ -42,7 +42,7 @@
 >"${specification_title}".title</template>
 
 	<template name="title (html)"
-			description="Give an HTML title to the Specification with a different path specified for the html reporting."
+			description="Give an HTML title to the Specification with a different path specified for the HTML reporting."
 			id="scala.specs2.template.titleHtml"
 			context="org.scala-ide.sdt.core.templates"
 			enabled="true"
@@ -102,7 +102,7 @@
 			id="scala.specs2.template.include"
 			context="org.scala-ide.sdt.core.templates"
 			enabled="true"
->include(new  ${type})</template>
+>include(new ${type})</template>
 
 	<template name="p"
 			description="Formatting fragment p."
