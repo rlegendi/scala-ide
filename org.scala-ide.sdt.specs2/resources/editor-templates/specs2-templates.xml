@@ -34,6 +34,15 @@
 	}
 }</template>
 
+	<template name="in"
+			description="Create an example."
+			id="scala.specs2.template.in"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>"${example}" in {
+	${success}
+}</template>
+
 	<template name="title"
 			description="Give a title to the Specification."
 			id="scala.specs2.template.title"
