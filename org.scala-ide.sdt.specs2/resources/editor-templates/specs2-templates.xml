@@ -6,10 +6,145 @@
 			id="scala.specs2.template.should"
 			context="org.scala-ide.sdt.core.templates"
 			enabled="true"
->"a" should {
-	"b" in {
-		c
+>"${fragment}" should {
+  "${example}" in {
+    ${cursor}
+  }
+}</template>
+
+	<template name="can"
+			description="A unit specification uses can/in blocks which constructs an example."
+			id="scala.specs2.template.can"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>"${fragment}" can {
+  "${example}" in {
+    ${cursor}
+  }
+}
+</template>
+
+	<template name=">>"
+			description="Create an example with no appended text."
+			id="scala.specs2.template.should"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>"${fragment}" >> {
+	"${example}" in {
+		${cursor}
 	}
 }</template>
+
+	<template name="title"
+			description="Give a title to the Specification."
+			id="scala.specs2.template.title"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>"${specification_title}".title</template>
+
+	<template name="title (html)"
+			description="Give an HTML title to the Specification with a different path specified for the html reporting."
+			id="scala.specs2.template.titleHtml"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>"${specification_title}".title(filePath = "${description.html}")</template>
+
+	<template name="args"
+			description="Create arguments for the specification."
+			id="scala.specs2.template.args"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>args(${arg}=${value})</template>
+
+	<template name="text"
+			description="Create a Text fragment."
+			id="scala.specs2.template.text"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>"${text}".txt</template>
+
+	<template name="text fragment"
+			description="Create a Text fragment."
+			id="scala.specs2.template.textFragment"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>textFragment("${text_fragment}")</template>
+
+	<template name="step"
+			description="Create a Step fragment."
+			id="scala.specs2.template.step"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>step { ${initFunction}() }</template>
+
+	<template name="action"
+			description="Create an Action fragment."
+			id="scala.specs2.template.action"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>action { ${justDoIt} }</template>
+
+	<template name="link"
+			description="Create a link to another specification."
+			id="scala.specs2.template.link"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>link("${link_name}" ~ ("${spec_description}", new ${type}))</template>
+
+	<template name="see"
+			description="Add a link to another specification without including its fragments for execution."
+			id="scala.specs2.template.see"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>see(new ${type})</template>
+
+	<template name="include"
+			description="Include another specification."
+			id="scala.specs2.template.include"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>include(new  ${type})</template>
+
+	<template name="p"
+			description="Formatting fragment p."
+			id="scala.specs2.template.p"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>p</template>
+
+	<template name="br"
+			description="Formatting fragment br."
+			id="scala.specs2.template.br"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>br</template>
+
+	<template name="t"
+			description="Formatting fragment t."
+			id="scala.specs2.template.t"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>t</template>
+
+	<template name="bt"
+			description="Formatting fragment bt."
+			id="scala.specs2.template.bt"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>bt</template>
+
+	<template name="end"
+			description="Formatting fragment end."
+			id="scala.specs2.template.end"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>end</template>
+
+	<template name="endp"
+			description="Formatting fragment endp."
+			id="scala.specs2.template.endp"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>endp</template>
 
 </templates>
