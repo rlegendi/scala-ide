@@ -7,9 +7,9 @@
 			context="org.scala-ide.sdt.core.templates"
 			enabled="true"
 >"${fragment}" should {
-  "${example}" in {
-    ${cursor}
-  }
+	"${example}" in {
+		${success}
+	}
 }</template>
 
 	<template name="can"
@@ -18,11 +18,10 @@
 			context="org.scala-ide.sdt.core.templates"
 			enabled="true"
 >"${fragment}" can {
-  "${example}" in {
-    ${cursor}
-  }
-}
-</template>
+	"${example}" in {
+		${success}
+	}
+}</template>
 
 	<template name=">>"
 			description="Create an example with no appended text."
@@ -31,7 +30,7 @@
 			enabled="true"
 >"${fragment}" >> {
 	"${example}" in {
-		${cursor}
+		${success}
 	}
 }</template>
 
