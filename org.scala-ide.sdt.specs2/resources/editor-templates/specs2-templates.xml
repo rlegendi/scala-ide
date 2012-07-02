@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+
+	<template name="should"
+			description="A unit specification uses should/in blocks which constructs an example."
+			id="scala.specs2.template.should"
+			context="org.scala-ide.sdt.core.templates"
+			enabled="true"
+>"a" should {
+	"b" in {
+		c
+	}
+}</template>
+
+</templates>

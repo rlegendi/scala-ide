@@ -1,53 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-
-<extension point="org.eclipse.ui.perspectiveExtensions">
-   <perspectiveExtension
-         targetID="org.scala-ide.sdt.core.perspective">
-      <newWizardShortcut
-            id="scala.tools.eclipse.specs2.wizards.NewAcceptanceSpecificationWizard">
-      </newWizardShortcut>
-      <newWizardShortcut
-            id="scala.tools.eclipse.specs2.wizards.NewUnitSpecificationWizard">
-      </newWizardShortcut>
-   </perspectiveExtension>
-</extension>
-
-     <extension
-         point="org.eclipse.ui.newWizards">
-  
-<wizard
-      category="org.scala-ide.sdt.core.wizards"
-      class="scala.tools.eclipse.specs2.wizards.NewAcceptanceSpecificationWizard"
-      finalPerspective="org.scala-ide.sdt.core.perspective"
-      icon="icons/full/etool16/newacceptance_specification_wiz.gif"
-      id="scala.tools.eclipse.specs2.wizards.NewAcceptanceSpecificationWizard"
-      name="Specs2 Acceptance Specification"
-      project="false">
-   <selection
-         class="java.lang.Object">
-   </selection>
-   <description>
-      Create a Specs2 Acceptance Specification
-   </description>
-</wizard>
-<wizard
-      category="org.scala-ide.sdt.core.wizards"
-      class="scala.tools.eclipse.specs2.wizards.NewUnitSpecificationWizard"
-      finalPerspective="org.scala-ide.sdt.core.perspective"
-      icon="icons/full/etool16/newunit_specification_wiz.gif"
-      id="scala.tools.eclipse.specs2.wizards.NewUnitSpecificationWizard"
-      name="Specs2 Unit Specification"
-      project="false">
-   <selection
-         class="java.lang.Object">
-   </selection>
-   <description>
-      Create a Specs2 Unit Specification
-   </description>
-</wizard>
-    </extension>
-  
-
+	<extension point="org.eclipse.ui.perspectiveExtensions">
+		<perspectiveExtension targetID="org.scala-ide.sdt.core.perspective">
+			<newWizardShortcut id="scala.tools.eclipse.specs2.wizards.NewAcceptanceSpecificationWizard" />
+			<newWizardShortcut id="scala.tools.eclipse.specs2.wizards.NewUnitSpecificationWizard" />
+		</perspectiveExtension>
+	</extension>
+	<extension point="org.eclipse.ui.newWizards">
+		<wizard
+				category="org.scala-ide.sdt.core.wizards"
+				class="scala.tools.eclipse.specs2.wizards.NewAcceptanceSpecificationWizard"
+				finalPerspective="org.scala-ide.sdt.core.perspective"
+				icon="icons/full/etool16/newacceptance_specification_wiz.gif"
+				id="scala.tools.eclipse.specs2.wizards.NewAcceptanceSpecificationWizard"
+				name="Specs2 Acceptance Specification"
+				project="false">
+			<selection class="java.lang.Object" />
+			<description>Create a Specs2 Acceptance Specification</description>
+		</wizard>
+		<wizard
+				category="org.scala-ide.sdt.core.wizards"
+				class="scala.tools.eclipse.specs2.wizards.NewUnitSpecificationWizard"
+				finalPerspective="org.scala-ide.sdt.core.perspective"
+				icon="icons/full/etool16/newunit_specification_wiz.gif"
+				id="scala.tools.eclipse.specs2.wizards.NewUnitSpecificationWizard"
+				name="Specs2 Unit Specification"
+				project="false">
+			<selection class="java.lang.Object" />
+			<description>Create a Specs2 Unit Specification</description>
+		</wizard>
+	</extension>
+	
+	<!-- Note that we are using the built-in ScalaTemplateContextType as the context type class! -->
+	<extension point="org.eclipse.ui.editors.templates">
+		<include file="resources/editor-templates/specs2-templates.xml" />
+	</extension>
 </plugin>
