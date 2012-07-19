@@ -69,3 +69,4 @@ Export-Package:
  scala.tools.eclipse.specs2.wizards,
  scala.tools.eclipse.specs2.wizards.pages
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Activator: scala.tools.eclipse.specs2.Specs2Plugin
