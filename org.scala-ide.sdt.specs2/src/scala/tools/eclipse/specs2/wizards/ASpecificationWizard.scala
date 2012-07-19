@@ -11,17 +11,42 @@ import org.eclipse.ui.ide.IDE
 import scalariform.formatter.ScalaFormatter
 import scala.tools.eclipse.formatter.FormatterPreferences
 import scala.tools.eclipse.util.Utils
+import scala.tools.eclipse.wizards.CodeBuilder
+import org.eclipse.jdt.internal.compiler.env.ICompilationUnit
+import org.eclipse.jdt.internal.corext.codemanipulation.StubUtility
 
 // TODO Generate comments ain't working
 abstract class ASpecificationWizard(val templateName: String, override val wizardPage: AbstractNewElementWizardPage)
   extends AbstractNewElementWizard(wizardPage) {
-  
+
   val TEMPLATE: String = scala.tools.eclipse.specs2.Utils.readFileContents(templateName)
-  
+
   private def createSource(applicationName: String, pkg: IPackageFragment): String = {
     val packageDeclaration = if (pkg.isDefaultPackage) "" else "package " + pkg.getElementName + "" + Constants.EoL * 2
     val templateSource = TEMPLATE
-    val unformatted = packageDeclaration + templateSource.format(applicationName)
+    val raw = packageDeclaration + templateSource.format(applicationName)
+
+    // TODO
+    val generateComments = true
+
+    val fileCommentReplacement: String =
+      if (generateComments) {
+        TemplateUtils.getFileTemplate(pkg.getJavaProject).getOrElse("")
+      } else {
+        ""
+      }
+
+    val typeCommentReplacement: String =
+      if (generateComments) {
+        TemplateUtils.getTypeTemplate(pkg.getJavaProject).getOrElse("")
+      } else {
+        ""
+      }
+
+    val unformatted =
+      raw.replaceAllLiterally("${FileComment}", fileCommentReplacement)
+        .replaceAllLiterally("${TypeComment}", typeCommentReplacement)
+
     ScalaFormatter.format(unformatted, FormatterPreferences.getPreferences(pkg.getResource.getProject))
   }
 
