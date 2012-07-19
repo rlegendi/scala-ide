@@ -52,6 +52,7 @@ import collection.mutable.Buffer
 import scala.tools.eclipse.ScalaPlugin._
 import scala.tools.eclipse.formatter.ScalaFormatterCleanUpProvider
 import scala.tools.eclipse.logging.HasLogger
+import org.osgi.framework.Bundle
 
 abstract class AbstractNewElementWizardPage extends NewTypeWizardPage(1, "") with HasLogger {
 
@@ -59,7 +60,7 @@ abstract class AbstractNewElementWizardPage extends NewTypeWizardPage(1, "") wit
 
   val imageName = "new" + declarationType.replace(' ', '_').toLowerCase + "_wiz.gif"
   val iPath = new Path("icons/full/wizban").append(imageName)
-  val url = FileLocator.find(plugin.getBundle, iPath, null)
+  val url = FileLocator.find(getCurrentPluginBundle, iPath, null)
 
   setImageDescriptor(ImageDescriptor.createFromURL(url))
   setTitle("Scala " + declarationType)
@@ -70,6 +71,8 @@ abstract class AbstractNewElementWizardPage extends NewTypeWizardPage(1, "") wit
   val SETTINGS_CREATEMAIN = "create_main"
   val SETTINGS_CREATECONSTR = "create_constructor"
   val SETTINGS_CREATEUNIMPLEMENTED = "create_unimplemented"
+    
+  protected def getCurrentPluginBundle: Bundle = plugin.getBundle
 
   protected object dialogFieldListener extends IDialogFieldListener {
     def dialogFieldChanged(field: DialogField) {

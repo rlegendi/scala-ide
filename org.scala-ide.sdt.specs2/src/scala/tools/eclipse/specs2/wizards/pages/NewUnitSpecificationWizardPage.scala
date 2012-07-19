@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Composite
 
 class NewUnitSpecificationWizardPage extends {
   val declarationType = "Unit Specification"
-} with AbstractNewElementWizardPage
+} with SpecsAbstractNewElementWizardPage
   with TSpec2Options {
   override def createControl(parent: Composite): Unit = {
     super.createControl(parent)
