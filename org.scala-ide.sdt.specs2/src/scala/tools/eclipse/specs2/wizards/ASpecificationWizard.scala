@@ -27,25 +27,27 @@ abstract class ASpecificationWizard(val templateName: String, override val wizar
     val raw = packageDeclaration + templateSource.format(applicationName)
 
     // TODO
-    val generateComments = true
-
-    val fileCommentReplacement: String =
-      if (generateComments) {
-        TemplateUtils.getFileTemplate(pkg.getJavaProject).getOrElse("")
-      } else {
-        ""
-      }
-
-    val typeCommentReplacement: String =
-      if (generateComments) {
-        TemplateUtils.getTypeTemplate(pkg.getJavaProject).getOrElse("")
-      } else {
-        ""
-      }
-
-    val unformatted =
-      raw.replaceAllLiterally("${FileComment}", fileCommentReplacement)
-        .replaceAllLiterally("${TypeComment}", typeCommentReplacement)
+//    val generateComments = true
+//
+//    val fileCommentReplacement: String =
+//      if (generateComments) {
+//        TemplateUtils.getFileTemplate(pkg.getJavaProject).getOrElse("")
+//      } else {
+//        ""
+//      }
+//
+//    val typeCommentReplacement: String =
+//      if (generateComments) {
+//        TemplateUtils.getTypeTemplate(pkg.getJavaProject).getOrElse("")
+//      } else {
+//        ""
+//      }
+//
+//    val unformatted =
+//      raw.replaceAllLiterally("${FileComment}", fileCommentReplacement)
+//        .replaceAllLiterally("${TypeComment}", typeCommentReplacement)
+        
+    val unformatted = raw
 
     ScalaFormatter.format(unformatted, FormatterPreferences.getPreferences(pkg.getResource.getProject))
   }

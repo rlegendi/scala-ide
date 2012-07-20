@@ -38,6 +38,8 @@
     <module>../org.scala-ide.sdt.scalatest</module>
     <module>../org.scala-ide.sdt.scalatest.tests</module>
     <module>../org.scala-ide.sdt.specs2</module>
+    <module>../org.scala-ide.sdt.specs2.feature</module>
+    <module>../org.scala-ide.sdt.specs2.update-site</module>
   </modules>
 
   <build>

@@ -1,9 +1,7 @@
-${FileComment}
 import org.specs2._
 import org.scalatest.WrapWith
 import org.scalatest.specs2.Spec2Runner
 
-${TypeComment}
 @WrapWith(classOf[Spec2Runner])
 class %s extends Specification { def is =
   "Programmer responses tend to be similar for sofware errors"                 ^

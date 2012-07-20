@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Specs2 ScalaTest Plugin
 Bundle-SymbolicName: scala.tools.eclipse.specs2;singleton:=true
-Bundle-Version: 1.0
+Bundle-Version: 2.1.0.qualifier
 Bundle-Vendor: scala-ide.org
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin

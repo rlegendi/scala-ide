@@ -2,7 +2,7 @@
 <feature
       id="org.scala-ide.sdt.specs2.feature"
       label="Specs2 Feature"
-      version="1.0.0.qualifier"
+      version="2.1.0.qualifier"
       provider-name="Richard O. Legendi &amp; Eric Torreborre"
       plugin="scala.tools.eclipse.specs2">
 
@@ -54,7 +54,7 @@ Other licenses:
       <import plugin="org.eclipse.debug.core"/>
       <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.eclipse.help"/>
-      <import plugin="org.eclipse.jdt.core" version="3.6.0" match="equivalent"/>
+      <import plugin="org.eclipse.jdt.core"/>
       <import plugin="org.eclipse.jdt.core.manipulation"/>
       <import plugin="org.eclipse.jdt.debug"/>
       <import plugin="org.eclipse.jdt.debug.ui"/>
@@ -78,7 +78,6 @@ Other licenses:
       <import plugin="org.scala-ide.scala.library"/>
       <import plugin="org.scala-ide.scala.compiler"/>
       <import plugin="org.scala-refactoring.library"/>
-      <import plugin="org.scala-ide.sbt.full.library" version="0.11.2" match="perfect"/>
       <import plugin="scalariform"/>
       <import plugin="org.junit4" version="4.5.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.browser" version="3.3.0" match="greaterOrEqual"/>
