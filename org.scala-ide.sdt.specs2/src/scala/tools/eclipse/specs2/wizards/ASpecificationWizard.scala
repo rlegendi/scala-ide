@@ -1,25 +1,26 @@
 package scala.tools.eclipse.specs2.wizards
 
 import java.io.ByteArrayInputStream
+
+import scala.tools.eclipse.formatter.FormatterPreferences
 import scala.tools.eclipse.specs2.Constants
+import scala.tools.eclipse.specs2.Specs2Utils
+import scala.tools.eclipse.util.Utils
 import scala.tools.eclipse.wizards.AbstractNewElementWizard
 import scala.tools.eclipse.wizards.AbstractNewElementWizardPage
+
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IFolder
 import org.eclipse.jdt.core.IPackageFragment
 import org.eclipse.ui.ide.IDE
+
 import scalariform.formatter.ScalaFormatter
-import scala.tools.eclipse.formatter.FormatterPreferences
-import scala.tools.eclipse.util.Utils
-import scala.tools.eclipse.wizards.CodeBuilder
-import org.eclipse.jdt.internal.compiler.env.ICompilationUnit
-import org.eclipse.jdt.internal.corext.codemanipulation.StubUtility
 
 // TODO Generate comments ain't working
 abstract class ASpecificationWizard(val templateName: String, override val wizardPage: AbstractNewElementWizardPage)
   extends AbstractNewElementWizard(wizardPage) {
 
-  val TEMPLATE: String = scala.tools.eclipse.specs2.Utils.readFileContents(templateName)
+  val TEMPLATE: String = Specs2Utils.readFileContents(templateName)
 
   private def createSource(applicationName: String, pkg: IPackageFragment): String = {
     val packageDeclaration = if (pkg.isDefaultPackage) "" else "package " + pkg.getElementName + "" + Constants.EoL * 2
@@ -27,26 +28,26 @@ abstract class ASpecificationWizard(val templateName: String, override val wizar
     val raw = packageDeclaration + templateSource.format(applicationName)
 
     // TODO
-//    val generateComments = true
-//
-//    val fileCommentReplacement: String =
-//      if (generateComments) {
-//        TemplateUtils.getFileTemplate(pkg.getJavaProject).getOrElse("")
-//      } else {
-//        ""
-//      }
-//
-//    val typeCommentReplacement: String =
-//      if (generateComments) {
-//        TemplateUtils.getTypeTemplate(pkg.getJavaProject).getOrElse("")
-//      } else {
-//        ""
-//      }
-//
-//    val unformatted =
-//      raw.replaceAllLiterally("${FileComment}", fileCommentReplacement)
-//        .replaceAllLiterally("${TypeComment}", typeCommentReplacement)
-        
+    //    val generateComments = true
+    //
+    //    val fileCommentReplacement: String =
+    //      if (generateComments) {
+    //        TemplateUtils.getFileTemplate(pkg.getJavaProject).getOrElse("")
+    //      } else {
+    //        ""
+    //      }
+    //
+    //    val typeCommentReplacement: String =
+    //      if (generateComments) {
+    //        TemplateUtils.getTypeTemplate(pkg.getJavaProject).getOrElse("")
+    //      } else {
+    //        ""
+    //      }
+    //
+    //    val unformatted =
+    //      raw.replaceAllLiterally("${FileComment}", fileCommentReplacement)
+    //        .replaceAllLiterally("${TypeComment}", typeCommentReplacement)
+
     val unformatted = raw
 
     ScalaFormatter.format(unformatted, FormatterPreferences.getPreferences(pkg.getResource.getProject))
@@ -54,6 +55,8 @@ abstract class ASpecificationWizard(val templateName: String, override val wizar
 
   private def createApplication(applicationName: String, pkg: IPackageFragment): Boolean = {
     val file = pkg.getResource.asInstanceOf[IFolder].getFile(applicationName + ".scala")
+    Specs2Utils.createParentDirectories(file)
+
     val source = createSource(applicationName, pkg)
     file.create(new ByteArrayInputStream(source.getBytes), true, null)
     openInEditor(file)
