@@ -32,7 +32,7 @@ object Specs2Utils {
     createRecursively(file.getParent.asInstanceOf[IFolder])
   }
 
-  def createRecursively(folder: IFolder, monitor: IProgressMonitor = null): Unit = {
+  private def createRecursively(folder: IFolder, monitor: IProgressMonitor = null): Unit = {
     require(folder != null)
 
     val force = true // How to handle out-of-sync resources
