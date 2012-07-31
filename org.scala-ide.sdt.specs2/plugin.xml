@@ -32,6 +32,35 @@
 		</wizard>
 	</extension>
 	
+	<extension point="org.eclipse.core.expressions.propertyTesters">
+	    <propertyTester
+    	       class="scala.tools.eclipse.specs2.launching.ScalaTestSpecs2FileTester"
+        	   id="scala.tools.eclipse.specs2.launching.ScalaTestSpecs2FileTester"
+        	   namespace="scala.tools.eclipse.scalatest.launching"
+	           properties="canLaunchAsScalaTestSpecs2File"
+    	       type="org.eclipse.core.runtime.IAdaptable"/>
+    </extension>
+		
+	<extension point="org.eclipse.debug.ui.launchShortcuts">
+		<shortcut
+				class="scala.tools.eclipse.scalatest.launching.ScalaTestFileLaunchShortcut"
+				icon="icons/full/obj16/scu_obj.gif"
+				id="org.eclipse.shortcut.scalatest.file"
+				label="%ScalaTestFileShortcut.label"
+				modes="run,debug">
+      <contextualLaunch>
+        <enablement>
+          <with variable="selection">
+            <count value="1" />
+            <iterate>
+		      <test property="scala.tools.eclipse.scalatest.launching.canLaunchAsScalaTestSpecs2File" forcePluginActivation="true" />
+		    </iterate>
+          </with>
+        </enablement>
+      </contextualLaunch>
+    </shortcut>
+    </extension>
+	
 	<!-- Note that we are using the built-in ScalaTemplateContextType as the context type class! -->
 	<extension point="org.eclipse.ui.editors.templates">
 		<include file="resources/editor-templates/specs2-templates.xml" />
