@@ -1,8 +1,8 @@
 import org.specs2._
 import org.scalatest.WrapWith
-import org.scalatest.specs2.Spec2Runner
+import org.scalatest.specs2.Specs2Runner
 
-@WrapWith(classOf[Spec2Runner])
+@WrapWith(classOf[Specs2Runner])
 class %s extends Specification { def is =
   "Programmer responses tend to be similar for sofware errors"                 ^
                                                                               p^

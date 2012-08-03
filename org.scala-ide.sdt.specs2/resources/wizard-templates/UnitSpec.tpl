@@ -1,8 +1,8 @@
 import org.specs2.mutable._
 import org.scalatest.WrapWith
-import org.scalatest.specs2.Spec2Runner
+import org.scalatest.specs2.Specs2Runner
 
-@WrapWith(classOf[Spec2Runner])
+@WrapWith(classOf[Specs2Runner])
 class %s extends Specification {
   "When listening to music, one" should {
     "find Rotfront great" in {
